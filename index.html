@@ -1,26 +1,186 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
-	<script src="scripts.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Простое выпадающее меню</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .menu {
+            list-style: none;
+            width: 300px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .menu-item {
+            border-bottom: 1px solid #eee;
+        }
+        
+        .menu-link {
+            display: block;
+            padding: 12px 15px;
+            color: #333;
+            text-decoration: none;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .menu-link:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .menu-link.has-children::after {
+            content: '▼';
+            position: absolute;
+            right: 15px;
+            font-size: 12px;
+        }
+        
+        .submenu {
+            list-style: none;
+            display: none;
+            background-color: #f9f9f9;
+        }
+        
+        .submenu .submenu {
+            background-color: #f0f0f0;
+        }
+        
+        .open {
+            display: block;
+        }
+        
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            background: #e7f3ff;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
 </head>
 <body>
-	<ul><li>Книги</li>
-		<ul><li>Отечественные</li></ul>
-		<ul><li>Зарубежные</li>
-			<ul><li>Детективы</li></ul>
-			<ul><li>Научная фантастика</li></ul>
-			<ul><li>Исторические</li></ul>
-		</ul>
-	<ul><li>DVD</li>
-	<ul><li>Отечественные</li>
-		<ul><li>Детективы</li></ul>
-		<ul><li>Научная фантастика</li></ul>
-		<ul><li>Исторические</li></ul>
-	</ul>
-	<ul><li>Зарубежные</li></ul>
-	</ul>
+    <h1>Простое выпадающее меню</h1>
+    
+    <ul class="menu" id="mainMenu">
+        <li class="menu-item">
+            <div class="menu-link has-children">Книги</div>
+            <ul class="submenu">
+                <li class="menu-item">
+                    <div class="menu-link has-children">Отечественные</div>
+                    <ul class="submenu">
+                        <li class="menu-item">
+                            <div class="menu-link">Детективы</div>
+                        </li>
+                        <li class="menu-item">
+                            <div class="menu-link">Научная фантастика</div>
+                        </li>
+                        <li class="menu-item">
+                            <div class="menu-link">Исторические</div>
+                        </li>
+                    </ul>
+                </li>
+                <li class="menu-item">
+                    <div class="menu-link has-children">Зарубежные</div>
+                    <ul class="submenu">
+                        <li class="menu-item">
+                            <div class="menu-link">Детективы</div>
+                        </li>
+                        <li class="menu-item">
+                            <div class="menu-link">Научная фантастика</div>
+                        </li>
+                        <li class="menu-item">
+                            <div class="menu-link">Исторические</div>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li class="menu-item">
+            <div class="menu-link has-children">DVD</div>
+            <ul class="submenu">
+                <li class="menu-item">
+                    <div class="menu-link has-children">Отечественные</div>
+                    <ul class="submenu">
+                        <li class="menu-item">
+                            <div class="menu-link">Детективы</div>
+                        </li>
+                        <li class="menu-item">
+                            <div class="menu-link">Научная фантастика</div>
+                        </li>
+                        <li class="menu-item">
+                            <div class="menu-link">Исторические</div>
+                        </li>
+                    </ul>
+                </li>
+                <li class="menu-item">
+                    <div class="menu-link">Зарубежные</div>
+                </li>
+            </ul>
+        </li>
+        <li class="menu-item">
+            <div class="menu-link">Контакты</div>
+        </li>
+    </ul>
+    
+    <div class="message" id="message">Вы можете перейти по ссылке</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuLinks = document.querySelectorAll('.menu-link');
+            const message = document.getElementById('message');
+            
+            menuLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    
+                    // Проверяем, есть ли у элемента дочернее меню
+                    const parentItem = this.parentElement;
+                    const submenu = parentItem.querySelector('.submenu');
+                    
+                    if (submenu) {
+                        // Переключаем видимость подменю
+                        submenu.classList.toggle('open');
+                    } else {
+                        // Если дочернего меню нет, показываем сообщение
+                        message.textContent = `Вы можете перейти по ссылке: "${this.textContent}"`;
+                        message.style.display = 'block';
+                        
+                        // Скрываем сообщение через 2 секунды
+                        setTimeout(() => {
+                            message.style.display = 'none';
+                        }, 2000);
+                    }
+                });
+            });
+            
+            // Закрытие меню при клике вне его области
+            document.addEventListener('click', function() {
+                const openSubmenus = document.querySelectorAll('.submenu.open');
+                openSubmenus.forEach(submenu => {
+                    submenu.classList.remove('open');
+                });
+            });
+        });
+    </script>
 </body>
 </html>
